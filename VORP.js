@@ -19,24 +19,28 @@ function Player(position, index, cost, vorp){
 	this.vorp = +vorp; // int
 }
 
-function randomPlayer(position, index) {
-	let cost = Math.floor(Math.random() * 10) + 3;
-	let vorp = Math.floor(Math.random() * 20);
+function randomPlayer(position, index, lp, up) {
+	let cost = Math.floor(Math.random() * (up - lp)) + lp;
+	let vorp = cost * 10;
+	let dev = 0.7 * vorp;
+	vorp += Math.floor(Math.random() * dev - dev / 2);
 	return (new Player(position, index, cost, vorp));
 }
 
 const N = 6 // # positions
-const P = 10 // # plaers per position
-const BUDGET = 100;
+const P = 10 // # players per position
+const BUDGET = 30;
 var PlayerList = [null];
 var Table = d3.select("#player_matrix");
 var DP_table = d3.select("#DP_matrix");
+const LP = 3;
+const UP = 15;
 
-function makePlayerList(n, p) {
+function makePlayerList(n, p, lp, up) {
 	for (let i = 1; i <= n; i++){
 		let thisRow = [null]
 		for (let j = 1; j <= p; j++) {
-			let obj = randomPlayer(i, j)
+			let obj = randomPlayer(i, j, lp, up)
 			thisRow.push(obj);
 		}
 		PlayerList.push(thisRow);
@@ -60,13 +64,15 @@ function player_info_table(n, p){
 			.data(PlayerList[i].slice(1))
 			.enter()
 			.append("td")
+			.append("input")
 			.classed("entry", "true")
 			.attr("id", (d, idx) => "player_" + i + '_' + (idx + 1))
-			.text((d, idx) => PlayerList[i][idx + 1].cost + ', ' + PlayerList[i][idx + 1].vorp);
+			.attr("value", (d, idx) => PlayerList[i][idx + 1].cost + ', ' + PlayerList[i][idx + 1].vorp);
 	}
+
+	// Event handler for price and value change
 }
 
-// recommended budget: 45
 function DP(budget, n, p){
 	// T[i, j] = optimized total vorp of the first jth position, if we use maximumly i dollars
 	// Choice[i, j] = the optimal player choice of jth position, using maximumly i dollars
@@ -111,6 +117,20 @@ function DP(budget, n, p){
 	}
 }
 
-makePlayerList(N, P);
-player_info_table(N, P);
-DP(BUDGET, N, P)
+// Configure and create player matrix
+d3.select("#create").on("click", function(){
+	PlayerList = [null]
+	Table.html("");
+	DP_table.html("");
+
+	// update parameters
+	var n = document.getElementById("num_pos").value == "" ? N : +document.getElementById("num_pos").value;
+	var p = document.getElementById("num_player").value == "" ? P : +document.getElementById("num_player").value;
+ 	var budget= document.getElementById("num_budget").value == "" ? BUDGET : +document.getElementById("num_budget").value;
+	lp = document.getElementById("num_lp").value == "" ? LP : +document.getElementById("num_lp").value;
+	up = document.getElementById("num_up").value == "" ? UP : +document.getElementById("num_up").value;
+
+	makePlayerList(n, p, lp, up);
+	player_info_table(n, p);
+	DP(budget, n, p);
+})

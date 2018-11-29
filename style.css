@@ -5,7 +5,6 @@ table {
 #player_matrix {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
-	width: 15%; 
 }
 
 #player_matrix td, #player_matrix th {
@@ -46,4 +45,8 @@ table {
     text-align: left;
     background-color: #2469A5;
     color: white;
+}
+
+td input {
+	width: 4em; 
 }

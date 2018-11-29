@@ -7,6 +7,15 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
+	<div id="config">
+		<span>Number of positions</span><input id="num_pos" type="text" placeholder="6"><br>
+		<span>Number of candidates per position</span><input id="num_player" type="text" placeholder="10"><br>
+		<span>Budget</span><input id="num_budget" type="text" placeholder="30"><br>
+		<span>Lowerbound of price</span><input id="num_lp" type="text" placeholder="3"><br>
+		<span>Upperbound of price</span><input id="num_up" type="text" placeholder="15"><br>
+		<button id="create">Generate player matrix</button><br>
+		<span>You can change the value of price and vorp manually. Make sure you split them with a comma. </span>
+	</div>
     <table id="player_matrix"></table>
 	<table id="DP_matrix"></table>
     <script src="VORP.js"></script>
