@@ -48,5 +48,9 @@ table {
 }
 
 td input {
-	width: 4em; 
+	width: 4em;
+}
+
+.hidden {
+	display: none; 
 }

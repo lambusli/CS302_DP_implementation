@@ -16,8 +16,16 @@
 		<button id="create">Generate player matrix</button><br>
 		<span>You can change the value of price and vorp manually. Make sure you split them with a comma. </span>
 	</div>
-    <table id="player_matrix"></table>
-	<table id="DP_matrix"></table>
+
+	<div id="player_info">
+		<table id="player_matrix"></table>
+		<button id="start" class="hidden">Start optimization</button>
+	</div>
+
+	<div id="calculation">
+		<table id="DP_matrix"></table>
+	</div>
+
     <script src="VORP.js"></script>
 </body>
 </html>

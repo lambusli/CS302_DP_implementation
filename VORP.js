@@ -1,3 +1,23 @@
+/*----------------
+* Default values
+-----------------*/
+
+const N = 6 // # positions
+const P = 10 // # players per position
+const BUDGET = 30;
+var PlayerList = [null];
+var Table = d3.select("#player_matrix");
+var DP_table = d3.select("#DP_matrix");
+const LP = 3;
+const UP = 15;
+
+function Player(position, index, cost, vorp){
+	this.position = +position; // int
+	this.index = +index; // int
+	this.cost = +cost; // int
+	this.vorp = +vorp; // int
+}
+
 function makeArray(nRow, nCol, initVal) {
     var arr = [];
     for(i = 0; i <= nRow; i++) {
@@ -12,12 +32,7 @@ function makeArray(nRow, nCol, initVal) {
     return arr;
 }
 
-function Player(position, index, cost, vorp){
-	this.position = +position; // int
-	this.index = +index; // int
-	this.cost = +cost; // int
-	this.vorp = +vorp; // int
-}
+
 
 function randomPlayer(position, index, lp, up) {
 	let cost = Math.floor(Math.random() * (up - lp)) + lp;
@@ -27,14 +42,7 @@ function randomPlayer(position, index, lp, up) {
 	return (new Player(position, index, cost, vorp));
 }
 
-const N = 6 // # positions
-const P = 10 // # players per position
-const BUDGET = 30;
-var PlayerList = [null];
-var Table = d3.select("#player_matrix");
-var DP_table = d3.select("#DP_matrix");
-const LP = 3;
-const UP = 15;
+
 
 function makePlayerList(n, p, lp, up) {
 	for (let i = 1; i <= n; i++){
@@ -71,9 +79,21 @@ function player_info_table(n, p){
 	}
 
 	// Event handler for price and value change
+	d3.selectAll(".entry").on("change", function(){
+		let info = d3.select(this).attr("id").split("_");
+		let val = d3.select(this).property("value").split(",");
+
+		let pos = +info[1]  // position of "changed" player
+		let idx = +info[2] // index of "changed" player
+		let newCost = +val[0] // newly changed cost
+		let newVorp = +val[1] // newly changed vorp
+		PlayerList[pos][idx].cost = newCost;
+		PlayerList[pos][idx].vorp = newVorp;
+	});
 }
 
 function DP(budget, n, p){
+	DP_table.html("");
 	// T[i, j] = optimized total vorp of the first jth position, if we use maximumly i dollars
 	// Choice[i, j] = the optimal player choice of jth position, using maximumly i dollars
 	var T = makeArray(budget, n, 0);
@@ -81,7 +101,7 @@ function DP(budget, n, p){
 
 	// Add table head
 	let header_row = DP_table.append("tr")
-	header_row.append("th").text("(Player_id, Total VORP)")
+	header_row.append("th").text("(Player index, Total VORP)")
 	for (let i = 1; i <= n; i++) {
 		header_row.append("th").text("Pos " + i);
 	}
@@ -111,7 +131,7 @@ function DP(budget, n, p){
 			thisRow.append("td")
 				.classed("DP_entry", true)
 				.classed("id", "DP_" + i + "_" + j)
-				.text(choiceText + " " + T[i][j]);
+				.text(choiceText + ", " + T[i][j]);
 
 		}
 	}
@@ -132,5 +152,12 @@ d3.select("#create").on("click", function(){
 
 	makePlayerList(n, p, lp, up);
 	player_info_table(n, p);
-	DP(budget, n, p);
+
+	// Start DP calculation
+	d3.select("#start")
+		.classed("hidden", false)
+		.on("click", function(){
+			DP(budget, n, p);
+		});
+
 })
