@@ -1,0 +1,49 @@
+table {
+	margin: 30px 10px;
+}
+
+#player_matrix {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+	width: 15%; 
+}
+
+#player_matrix td, #player_matrix th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#player_matrix tr:nth-child(even){background-color: #f2f2f2;}
+
+#player_matrix tr:hover {background-color: #ddd;}
+
+#player_matrix th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+#DP_matrix {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    /* width: 100%; */
+}
+
+#DP_matrix td, #DP_matrix th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#DP_matrix tr:nth-child(even){background-color: #f2f2f2;}
+
+#DP_matrix tr:hover {background-color: #ddd;}
+
+#DP_matrix th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #2469A5;
+    color: white;
+}
