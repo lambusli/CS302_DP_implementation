@@ -106,34 +106,50 @@ function DP(budget, n, p){
 		header_row.append("th").text("Pos " + i);
 	}
 
+	// start calculation
+	let tk = 100; 
+	let tj = tk * p;
+	let ti = tj * n;
 	for (let i = 1; i <= budget; i++) {
-		thisRow = DP_table.append("tr")
-		thisRow.append("th").text("Budget $" + i);
-		// each position
-		for (let j = 1; j <= n; j++) {
 
-			T[i][j] = T[i][j - 1] // assume not signing the current position j
-			choice[i][j] = null;
+		(function(i){ setTimeout(function(){
+			let thisRow = DP_table.append("tr")
+			thisRow.append("th").text("Budget $" + i);
+			// each position
+			for (let j = 1; j <= n; j++) {
 
-			// each player at this position
-			for (let k = 1; k <= p; k++) {
-				if (i - PlayerList[j][k].cost >= 0){
-					let temp = T[i - PlayerList[j][k].cost][j - 1] + PlayerList[j][k].vorp;
-					if (temp > T[i][j]) {
-						T[i][j] = temp;
-						choice[i][j] = PlayerList[j][k];
+				(function(j){setTimeout(function(){
+
+					T[i][j] = T[i][j - 1] // assume not signing the current position j
+					choice[i][j] = null;
+
+					let thisGrid = thisRow.append("td")
+						.classed("DP_entry", true)
+						.attr("id", "DP_" + i + "_" + j)
+						.text("None" + ", " + T[i][j]);
+
+					// each player at this position
+					for (let k = 1; k <= p; k++) {
+						(function (k) {
+							setTimeout(function () {
+
+								if (i - PlayerList[j][k].cost >= 0){
+									let temp = T[i - PlayerList[j][k].cost][j - 1] + PlayerList[j][k].vorp;
+									if (temp > T[i][j]) {
+										T[i][j] = temp;
+										choice[i][j] = PlayerList[j][k];
+
+										let choiceText = choice[i][j] == null ? "None" : choice[i][j]["index"];
+										thisGrid.text(choiceText + ", " + T[i][j])
+									}
+								}
+
+							}, tk * (k - 1));})(k);
 					}
-				}
+				}, tj * (j - 1));})(j)
 			}
+		}, ti * (i - 1));})(i);
 
-			// Enter data into table
-			let choiceText = choice[i][j] == null ? "None" : choice[i][j]["index"];
-			thisRow.append("td")
-				.classed("DP_entry", true)
-				.classed("id", "DP_" + i + "_" + j)
-				.text(choiceText + ", " + T[i][j]);
-
-		}
 	}
 }
 
