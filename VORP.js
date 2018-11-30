@@ -13,7 +13,8 @@ const UP = 15;
 var tk = 100;
 var tj = tk * P;
 var ti = tj * N;
-
+var T = [];
+var choice = [];
 
 function Player(position, index, cost, vorp){
 	this.position = +position; // int
@@ -76,14 +77,19 @@ function player_info_table(n, p){
 			.data(PlayerList[i].slice(1))
 			.enter()
 			.append("td")
+			.attr("id", (d, idx) => "plentry_" + i + "_" + (idx + 1))
+			.classed("plentry", true)
 			.append("input")
-			.classed("entry", "true")
 			.attr("id", (d, idx) => "player_" + i + '_' + (idx + 1))
+			.classed("entry", "true")
 			.attr("value", (d, idx) => PlayerList[i][idx + 1].cost + ', ' + PlayerList[i][idx + 1].vorp);
 	}
 
 	// Event handler for price and value change
 	d3.selectAll(".entry").on("change", function(){
+		d3.selectAll(".entry").style("background-color", "");
+		d3.selectAll(".plentry").style("background-color", "");
+
 		let info = d3.select(this).attr("id").split("_");
 		let val = d3.select(this).property("value").split(",");
 
@@ -100,8 +106,8 @@ function DP(budget, n, p){
 	DP_table.html("");
 	// T[i, j] = optimized total vorp of the first jth position, if we use maximumly i dollars
 	// Choice[i, j] = the optimal player choice of jth position, using maximumly i dollars
-	var T = makeArray(budget, n, 0);
-	var choice = makeArray(budget, n, null);
+	T = makeArray(budget, n, 0);
+	choice = makeArray(budget, n, null);
 
 	// Add table head
 	let header_row = DP_table.append("tr")
@@ -195,8 +201,31 @@ d3.select("#create").on("click", function(){
 
 			// Executed when calculation is done
 			setTimeout(function(){
-				alert("done!"); 
 				d3.selectAll(".DP_entry").style("background-color", "");
+
+				let infoText = "";
+				i = budget, j = n;
+				// save as much budget as we can
+				while(T[i][j] == T[i - 1][j]) {
+					i--;
+				}
+				infoText += "We use $" + i + " from the budget $" + budget
+				infoText += "\nThe chosen player has been highlighted in the player list.";
+				let choiceList = [];
+				while (i > 0 && j > 0) {
+					currP = choice[i][j];
+					if (currP != null) {
+						choiceList.push(currP)
+						selector = currP.position + "_" + currP.index;
+						d3.select("#player_" + selector).style("background-color", "yellow");
+						d3.select("#plentry_" + selector).style("background-color", "yellow");
+						i -= currP.cost;
+					}
+					j--;
+				}
+				console.log(choiceList)
+				alert(infoText);
+
 			}, ti * (budget));
 		});
 
