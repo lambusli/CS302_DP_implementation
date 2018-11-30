@@ -10,6 +10,10 @@ var Table = d3.select("#player_matrix");
 var DP_table = d3.select("#DP_matrix");
 const LP = 3;
 const UP = 15;
+var tk = 100;
+var tj = tk * P;
+var ti = tj * N;
+
 
 function Player(position, index, cost, vorp){
 	this.position = +position; // int
@@ -107,9 +111,6 @@ function DP(budget, n, p){
 	}
 
 	// start calculation
-	let tk = 100; 
-	let tj = tk * p;
-	let ti = tj * n;
 	for (let i = 1; i <= budget; i++) {
 
 		(function(i){ setTimeout(function(){
@@ -132,12 +133,26 @@ function DP(budget, n, p){
 					for (let k = 1; k <= p; k++) {
 						(function (k) {
 							setTimeout(function () {
+								// Clear previous color
+								d3.selectAll(".DP_entry").style("background-color", "");
 
-								if (i - PlayerList[j][k].cost >= 0){
-									let temp = T[i - PlayerList[j][k].cost][j - 1] + PlayerList[j][k].vorp;
+								let prevCost = i - PlayerList[j][k].cost;
+								let prevPos = j - 1;
+
+								if (prevCost >= 0){
+
+									console.log(d3.select("#DP_" + prevCost + "_" + prevPos));
+									d3.select("#DP_" + prevCost + "_" + prevPos)
+										.style("background-color", "#CEB3AB");
+
+									let temp = T[prevCost][prevPos] + PlayerList[j][k].vorp;
 									if (temp > T[i][j]) {
 										T[i][j] = temp;
 										choice[i][j] = PlayerList[j][k];
+
+										// chosen
+										d3.select("#DP_" + (prevCost) + "_" + prevPos)
+											.style("background-color", "#FF5714");
 
 										let choiceText = choice[i][j] == null ? "None" : choice[i][j]["index"];
 										thisGrid.text(choiceText + ", " + T[i][j])
@@ -165,6 +180,9 @@ d3.select("#create").on("click", function(){
  	var budget= document.getElementById("num_budget").value == "" ? BUDGET : +document.getElementById("num_budget").value;
 	lp = document.getElementById("num_lp").value == "" ? LP : +document.getElementById("num_lp").value;
 	up = document.getElementById("num_up").value == "" ? UP : +document.getElementById("num_up").value;
+	tk = 100;
+	tj = tk * p;
+	ti = tj * n;
 
 	makePlayerList(n, p, lp, up);
 	player_info_table(n, p);
@@ -174,6 +192,12 @@ d3.select("#create").on("click", function(){
 		.classed("hidden", false)
 		.on("click", function(){
 			DP(budget, n, p);
+
+			// Executed when calculation is done
+			setTimeout(function(){
+				alert("done!"); 
+				d3.selectAll(".DP_entry").style("background-color", "");
+			}, ti * (budget));
 		});
 
 })
