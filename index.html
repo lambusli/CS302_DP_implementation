@@ -8,13 +8,41 @@
 </head>
 <body>
 	<div id="config">
-		<span>Number of positions</span><input id="num_pos" type="text" placeholder="4"><br>
-		<span>Number of candidates per position</span><input id="num_player" type="text" placeholder="5"><br>
-		<span>Budget</span><input id="num_budget" type="text" placeholder="20"><br>
-		<span>Lowerbound of price</span><input id="num_lp" type="text" placeholder="3"><br>
-		<span>Upperbound of price</span><input id="num_up" type="text" placeholder="15"><br>
-		<button id="create">Generate player matrix</button><br>
-		<span>You can change the value of price and vorp manually. Make sure you split them with a comma. </span>
+		<h1> Max VORP for a baseball team CLRS 15-12 </h1>
+		<div class="attr">
+			<span>Number of positions</span>
+			<input id="num_pos" class="textin" type="text" placeholder="4"><br>
+		</div>
+		<div class="attr">
+			<span>Number of candidates per position</span>
+			<input id="num_player" class="textin" type="text" placeholder="5"><br>
+		</div>
+		<div class="attr">
+			<span>Budget</span>
+			<input id="num_budget" class="textin" type="text" placeholder="20"><br>
+		</div>
+		<div class="attr">
+			<span>Lowerbound of price</span>
+			<input id="num_lp" class="textin" type="text" placeholder="3"><br>
+		</div>
+		<div class="attr">
+			<span>Upperbound of price</span>
+			<input id="num_up" class="textin" type="text" placeholder="15"><br>
+		</div>
+		<div class="attr">
+			<span>Speed of animation: </span>
+			Fast
+			<input id="speed" type="range" placeholder="400" min="50" max="1000">
+			Slow<br>
+		</div>
+		<button id="create">(Re)Generate player matrix</button><br>
+		<div id="attention">
+			<ol>
+				<lt>Notes:</lt>
+				<li>You can change the value of price and vorp manually. Make sure you split them with a comma.</li>
+				<li>Speed of animation has to be preset, and cannot be adjusted during animation</li>
+			</ol>
+		</div>
 	</div>
 
 	<div id="player_info">

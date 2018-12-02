@@ -1,7 +1,6 @@
 /*----------------
 * Default values
 -----------------*/
-
 const N = 4 // # positions
 const P = 5 // # players per position
 const BUDGET = 20;
@@ -16,6 +15,10 @@ var ti = tj * N;
 var T = [];
 var choice = [];
 
+
+/* -----------
+* Player object
+-------------*/
 function Player(position, index, cost, vorp){
 	this.position = +position; // int
 	this.index = +index; // int
@@ -23,6 +26,9 @@ function Player(position, index, cost, vorp){
 	this.vorp = +vorp; // int
 }
 
+/*-------------
+* Generate a 2D Array
+-------------*/
 function makeArray(nRow, nCol, initVal) {
     var arr = [];
     for(i = 0; i <= nRow; i++) {
@@ -37,8 +43,11 @@ function makeArray(nRow, nCol, initVal) {
     return arr;
 }
 
-
-
+/*-------------
+* Generate a random player
+* Vorp = k * cost +/- deviation
+* Can be changed manually
+-------------*/
 function randomPlayer(position, index, lp, up) {
 	let cost = Math.floor(Math.random() * (up - lp)) + lp;
 	let vorp = cost * 10;
@@ -47,8 +56,9 @@ function randomPlayer(position, index, lp, up) {
 	return (new Player(position, index, cost, vorp));
 }
 
-
-
+/*-------------
+* Generate a list of player
+-------------*/
 function makePlayerList(n, p, lp, up) {
 	for (let i = 1; i <= n; i++){
 		let thisRow = [null]
@@ -60,6 +70,10 @@ function makePlayerList(n, p, lp, up) {
 	}
 }
 
+/*-------------
+* Generate a play info table in html
+*
+-------------*/
 function player_info_table(n, p){
 	var header_row = Table.append("tr");
 
@@ -86,6 +100,7 @@ function player_info_table(n, p){
 	}
 
 	// Event handler for price and value change
+	// Update player list
 	d3.selectAll(".entry").on("change", function(){
 		d3.selectAll(".entry").style("background-color", "");
 		d3.selectAll(".plentry").style("background-color", "");
@@ -102,6 +117,9 @@ function player_info_table(n, p){
 	});
 }
 
+/*-------------
+* Dynamic programming
+-------------*/
 function DP(budget, n, p, ti, tj, tk){
 	DP_table.html("");
 	// T[i, j] = optimized total vorp of the first jth position, if we use maximumly i dollars
@@ -115,56 +133,57 @@ function DP(budget, n, p, ti, tj, tk){
 	for (let i = 1; i <= n; i++) {
 		header_row.append("th").text("Pos " + i);
 	}
-	console.log("real" + " " + ti + " " + tj + " " + tk)
+
 	// start calculation
-	for (let i = 1; i <= budget; i++) {
+	// At each level of loop, I employ the function setTimeout() to create animation
+	// bug: speed of animation can't be changed during animation
+	for (let i = 1; i <= budget; i++) { // i: each amount of budget
 
 		(function(i){ setTimeout(function(){
 			let thisRow = DP_table.append("tr")
 			thisRow.append("th").text("Budget $" + i);
-			// each position
-			for (let j = 1; j <= n; j++) {
+
+			for (let j = 1; j <= n; j++) {// j: each position
 
 				(function(j){setTimeout(function(){
 
 					T[i][j] = T[i][j - 1] // assume not signing the current position j
 					choice[i][j] = null;
 
+					// show initial info in the table entry
 					let thisGrid = thisRow.append("td")
 						.classed("DP_entry", true)
 						.attr("id", "DP_" + i + "_" + j)
 						.text("None" + ", " + T[i][j]);
 
-					// each player at this position
-					for (let k = 1; k <= p; k++) {
-						(function (k) {
-							setTimeout(function () {
-								// Clear previous color
-								d3.selectAll(".DP_entry").style("background-color", "");
+					for (let k = 1; k <= p; k++) { // k: each player at this position
+						(function (k) {setTimeout(function () {
+							// Clear previous color
+							d3.selectAll(".DP_entry").style("background-color", "");
 
-								let prevCost = i - PlayerList[j][k].cost;
-								let prevPos = j - 1;
+							let prevCost = i - PlayerList[j][k].cost;
+							let prevPos = j - 1;
 
-								if (prevCost >= 0){
+							if (prevCost >= 0){ // prevCost must >=0 s.t. no negative index for array
 
-									d3.select("#DP_" + prevCost + "_" + prevPos)
-										.style("background-color", "#CEB3AB");
+								d3.select("#DP_" + prevCost + "_" + prevPos)
+									.style("background-color", "#CEB3AB");
 
-									let temp = T[prevCost][prevPos] + PlayerList[j][k].vorp;
-									if (temp > T[i][j]) {
-										T[i][j] = temp;
-										choice[i][j] = PlayerList[j][k];
+								let temp = T[prevCost][prevPos] + PlayerList[j][k].vorp;
+								if (temp > T[i][j]) { // if find a better choice, update
+									T[i][j] = temp;
+									choice[i][j] = PlayerList[j][k];
 
-										// chosen
-										d3.select("#DP_" + (prevCost) + "_" + prevPos)
-											.style("background-color", "#FF5714");
+									// show which "subsolution" the better choice comes from
+									d3.select("#DP_" + (prevCost) + "_" + prevPos)
+										.style("background-color", "#FF5714");
 
-										let choiceText = choice[i][j] == null ? "None" : choice[i][j]["index"];
-										thisGrid.text(choiceText + ", " + T[i][j])
-									}
+									let choiceText = choice[i][j] == null ? "None" : choice[i][j]["index"];
+									thisGrid.text(choiceText + ", " + T[i][j])
 								}
+							}
 
-							}, tk * (k - 1));})(k);
+						}, tk * (k - 1));})(k);
 					}
 				}, tj * (j - 1));})(j)
 			}
@@ -173,7 +192,9 @@ function DP(budget, n, p, ti, tj, tk){
 	}
 }
 
-// Configure and create player matrix
+/* ----------------
+* Upon creation of Table
+---------------*/
 d3.select("#create").on("click", function(){
 	PlayerList = [null]
 	Table.html("");
@@ -185,10 +206,9 @@ d3.select("#create").on("click", function(){
  	var budget= document.getElementById("num_budget").value == "" ? BUDGET : +document.getElementById("num_budget").value;
 	lp = document.getElementById("num_lp").value == "" ? LP : +document.getElementById("num_lp").value;
 	up = document.getElementById("num_up").value == "" ? UP : +document.getElementById("num_up").value;
-	var tj = 400;
+	var tj = document.getElementById("speed").value;
 	var tk = tj / p;
 	var ti = tj * n;
-	console.log(ti + ' ' + tj + ' ' + tk);
 
 	makePlayerList(n, p, lp, up);
 	player_info_table(n, p);

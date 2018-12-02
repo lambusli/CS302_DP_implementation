@@ -52,5 +52,49 @@ td input {
 }
 
 .hidden {
-	display: none; 
+	display: none;
+}
+
+#config {
+	background-color: #FFD7B7;
+	border-radius: 5px;
+	display: inline-block;
+	padding: 20px;
+	font-family: Arial;
+}
+
+#config .attr span{
+	font-weight: 700;
+}
+
+#config h1 {
+	margin: 10px;
+}
+
+#config .attr {
+	margin: 5px;
+}
+
+#config .textin{
+	-webkit-appearance: none;
+	margin-left: 5px;
+    border: 0;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    border-bottom: 2px solid #C8CCD4;
+    background: none;
+    border-radius: 0;
+    color: #223254;
+    transition: all .15s ease;
+}
+
+#config #create, #start {
+	margin-top: 5px;
+	background-color: #e6a977;
+	font-size: 20px;
+	font-weight: 700;
+	border-radius: 5px;
+	color: #663829;
+	padding: 10px 10px;
 }
