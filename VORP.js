@@ -2,16 +2,16 @@
 * Default values
 -----------------*/
 
-const N = 6 // # positions
-const P = 10 // # players per position
-const BUDGET = 30;
+const N = 4 // # positions
+const P = 5 // # players per position
+const BUDGET = 20;
 var PlayerList = [null];
 var Table = d3.select("#player_matrix");
 var DP_table = d3.select("#DP_matrix");
 const LP = 3;
 const UP = 15;
-var tk = 100;
-var tj = tk * P;
+var tj = 400;
+var tk = tj / P;
 var ti = tj * N;
 var T = [];
 var choice = [];
@@ -102,7 +102,7 @@ function player_info_table(n, p){
 	});
 }
 
-function DP(budget, n, p){
+function DP(budget, n, p, ti, tj, tk){
 	DP_table.html("");
 	// T[i, j] = optimized total vorp of the first jth position, if we use maximumly i dollars
 	// Choice[i, j] = the optimal player choice of jth position, using maximumly i dollars
@@ -115,7 +115,7 @@ function DP(budget, n, p){
 	for (let i = 1; i <= n; i++) {
 		header_row.append("th").text("Pos " + i);
 	}
-
+	console.log("real" + " " + ti + " " + tj + " " + tk)
 	// start calculation
 	for (let i = 1; i <= budget; i++) {
 
@@ -147,7 +147,6 @@ function DP(budget, n, p){
 
 								if (prevCost >= 0){
 
-									console.log(d3.select("#DP_" + prevCost + "_" + prevPos));
 									d3.select("#DP_" + prevCost + "_" + prevPos)
 										.style("background-color", "#CEB3AB");
 
@@ -186,9 +185,10 @@ d3.select("#create").on("click", function(){
  	var budget= document.getElementById("num_budget").value == "" ? BUDGET : +document.getElementById("num_budget").value;
 	lp = document.getElementById("num_lp").value == "" ? LP : +document.getElementById("num_lp").value;
 	up = document.getElementById("num_up").value == "" ? UP : +document.getElementById("num_up").value;
-	tk = 100;
-	tj = tk * p;
-	ti = tj * n;
+	var tj = 400;
+	var tk = tj / p;
+	var ti = tj * n;
+	console.log(ti + ' ' + tj + ' ' + tk);
 
 	makePlayerList(n, p, lp, up);
 	player_info_table(n, p);
@@ -197,7 +197,7 @@ d3.select("#create").on("click", function(){
 	d3.select("#start")
 		.classed("hidden", false)
 		.on("click", function(){
-			DP(budget, n, p);
+			DP(budget, n, p, ti, tj, tk);
 
 			// Executed when calculation is done
 			setTimeout(function(){
